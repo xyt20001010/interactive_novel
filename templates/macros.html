@@ -1,0 +1,8 @@
+{% macro render_choice(choice, story_id) %}
+<li class="choice-item">
+    <a href="{{ url_for('chapter', story_id=story_id, chapter_id=choice.next_chapter_id) }}"
+       class="choice-link">
+        {{ choice.text }}
+    </a>
+</li>
+{% endmacro %}

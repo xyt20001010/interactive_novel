@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Interactive Novel{% endblock %}
+
+{% block content %}
+<section class="stories-list">
+    <h2>Available Stories</h2>
+    <ul>
+        {% for story in stories %}
+        <li>
+            <a href="{{ url_for('story', story_id=story.id) }}">
+                {{ story.title }}
+            </a>
+            <p>{{ story.description }}</p>
+        </li>
+        {% endfor %}
+    </ul>
+</section>
+{% endblock %}

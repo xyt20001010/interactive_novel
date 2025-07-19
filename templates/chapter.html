@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% from "macros.html" import render_choice %}
+
+{% block title %}{{ chapter.title }} - {{ story.title }}{% endblock %}
+
+{% block content %}
+<article class="chapter">
+    <h2>{{ chapter.title }}</h2>
+    <div class="content">
+        {{ chapter.content|format_content|safe }}
+    </div>
+    
+    {% if choices %}
+    <div class="choices">
+        <h3>你的选择:</h3>
+        <ul>
+            {% for choice in choices %}
+                {{ render_choice(choice, story.id) }}
+            {% endfor %}
+        </ul>
+    </div>
+    {% else %}
+    <div class="end">
+        <p>故事到此结束。</p>
+        <a href="{{ url_for('index') }}">重新开始</a>
+    </div>
+    {% endif %}
+</article>
+{% endblock %}
