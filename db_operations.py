@@ -40,10 +40,10 @@ def add_sample_data():
             db.session.commit()
             
             # 添加新的子选项
-            choice1_sub1 = Choice(chapter_id=chapter2.id, text="去河边", parent_choice_id=choice1.id, next_chapter_id=ending1.id)
-            choice1_sub2 = Choice(chapter_id=chapter2.id, text="去山谷", parent_choice_id=choice1.id, next_chapter_id=ending2.id)
-            choice2_sub1 = Choice(chapter_id=chapter3.id, text="原地等待", parent_choice_id=choice2.id, next_chapter_id=ending3.id)
-            choice2_sub2 = Choice(chapter_id=chapter3.id, text="沿海边走走", parent_choice_id=choice2.id, next_chapter_id=ending4.id)
+            choice1_sub1 = Choice(chapter_id=chapter2.id, text="去河边", next_chapter_id=ending1.id)
+            choice1_sub2 = Choice(chapter_id=chapter2.id, text="去山谷", next_chapter_id=ending2.id)
+            choice2_sub1 = Choice(chapter_id=chapter3.id, text="原地等待", next_chapter_id=ending3.id)
+            choice2_sub2 = Choice(chapter_id=chapter3.id, text="沿海边走走", next_chapter_id=ending4.id)
             
             db.session.add_all([choice1, choice2, choice1_sub1, choice1_sub2, choice2_sub1, choice2_sub2])
             db.session.commit()

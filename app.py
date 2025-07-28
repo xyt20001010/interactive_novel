@@ -35,7 +35,7 @@ def chapter(story_id, chapter_id):
     story = Story.query.get_or_404(story_id)
     chapter = Chapter.query.get_or_404(chapter_id)
     # 只查询没有父选项的顶级选项
-    choices = Choice.query.filter_by(chapter_id=chapter_id, parent_choice_id=None).all()
+    choices = Choice.query.filter_by(chapter_id=chapter_id).all()
     
     return render_template('chapter.html', 
                          story=story, 
@@ -48,4 +48,4 @@ def format_content(text):
     return ''.join(paragraphs)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=8000)

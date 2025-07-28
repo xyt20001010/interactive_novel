@@ -18,12 +18,12 @@ class Chapter(db.Model):
     choices = db.relationship('Choice', 
                             backref='chapter', 
                             lazy=True,
-                            foreign_keys='Choice.chapter_id')  # 明确指定外键
+                            foreign_keys='Choice.chapter_id')  # 指定外键
 
 class Choice(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     chapter_id = db.Column(db.Integer, db.ForeignKey('chapter.id'), nullable=False)
     text = db.Column(db.String(200), nullable=False)
     next_chapter_id = db.Column(db.Integer, db.ForeignKey('chapter.id'))
-    parent_choice_id = db.Column(db.Integer, db.ForeignKey('choice.id'))
-    sub_choices = db.relationship('Choice', backref=db.backref('parent_choice', remote_side='Choice.id'))
+    # parent_choice_id = db.Column(db.Integer, db.ForeignKey('choice.id'))
+    # sub_choices = db.relationship('Choice', backref=db.backref('parent_choice', remote_side='Choice.id'))
