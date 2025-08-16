@@ -81,6 +81,151 @@ main {
     border-top: 1px solid #ddd;
 }
 
+.header-controls {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1000;
+}
+
+.back-to-index-container {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.back-to-index, .settings-btn {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: #3498db;
+    color: white;
+    text-decoration: none;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 14px;
+}
+
+.back-to-index:hover, .settings-btn:hover {
+    background-color: #2980b9;
+}
+
+.settings-panel {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 5px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 10px;
+    min-width: 150px;
+}
+
+.setting-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #333;
+}
+
+.setting-item input[type="checkbox"] {
+    margin: 0;
+    cursor: pointer;
+}
+
+.setting-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #333;
+}
+
+.volume-slider {
+    width: 100px;
+    height: 5px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: #ddd;
+    outline: none;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+    border-radius: 5px;
+}
+
+.volume-slider:hover {
+    opacity: 1;
+}
+
+.volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 15px;
+    height: 15px;
+    background: #3498db;
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+.volume-slider::-moz-range-thumb {
+    width: 15px;
+    height: 15px;
+    background: #3498db;
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+#volume-display {
+    min-width: 20px;
+    text-align: center;
+    font-weight: bold;
+    color: #3498db;
+}
+
+.chapter-container {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 150px);
+    position: relative;
+}
+
+.scrollable-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    padding-bottom: 150px;
+}
+
+.fixed-choices {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    padding: 0.5rem 1rem;
+    border-top: 1px solid #ddd;
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+}
+
+.fixed-choices ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+}
+
+.fixed-choices .choice-link {
+    margin: 0;
+    min-width: 120px;
+    text-align: center;
+}
+
 footer {
     text-align: center;
     padding: 1rem;

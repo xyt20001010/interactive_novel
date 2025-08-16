@@ -2,6 +2,7 @@ from flask import Flask, render_template, redirect, url_for
 from flask_migrate import Migrate
 from models import db
 from config import Config
+import json
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -10,12 +11,15 @@ db.init_app(app)
 # 初始化 Flask-Migrate
 migrate = Migrate(app, db)  # 关键行：绑定 app 和 db
 
-from db_operations import init_db, add_sample_data
+# from db_operations.db_operation_1 import init_db, add_sample_data
+from db_operations.db_operation_2 import init_db, add_sample_data
 
 # 初始化数据库
 with app.app_context():
     init_db()
     add_sample_data()
+
+
 
 @app.route('/')
 def index():
@@ -35,7 +39,7 @@ def chapter(story_id, chapter_id):
     story = Story.query.get_or_404(story_id)
     chapter = Chapter.query.get_or_404(chapter_id)
     # 只查询没有父选项的顶级选项
-    choices = Choice.query.filter_by(chapter_id=chapter_id).all()
+    choices = Choice.query.filter_by(story_id=story_id,chapter_id=chapter_id).all()
     
     return render_template('chapter.html', 
                          story=story, 

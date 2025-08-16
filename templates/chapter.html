@@ -3,16 +3,33 @@
 
 {% block title %}{{ chapter.title }} - {{ story.title }}{% endblock %}
 
+{% block header_title %}{{ story.title }}{% endblock %}
+
 {% block content %}
-<article class="chapter">
-    <h2>{{ chapter.title }}</h2>
-    <div class="content">
-        {{ chapter.content|format_content|safe }}
+<div class="header-controls">
+    <div class="back-to-index-container">
+        <a href="{{ url_for('index') }}" class="btn back-to-index">回到首页</a>
+        <button id="settings-btn" class="btn settings-btn" onclick="toggleSettings()">设置</button>
     </div>
+    <div id="settings-panel" class="settings-panel" style="display: none;">
+        <label class="setting-item">
+            <span>音量调节：</span>
+            <input type="range" id="volume-slider" min="0" max="10" value="7" class="volume-slider">
+            <span id="volume-display">7</span>
+        </label>
+    </div>
+</div>
+
+<div class="chapter-container">
+    <article class="chapter">
+        <h2>{{ chapter.title }}</h2>
+        <div class="content scrollable-content">
+            {{ chapter.content|format_content|safe }}
+        </div>
+    </article>
     
     {% if choices %}
-    <div class="choices">
-        <h3>你的选择:</h3>
+    <div class="fixed-choices">
         <ul>
             {% for choice in choices %}
                 {{ render_choice(choice, story.id) }}
@@ -20,10 +37,143 @@
         </ul>
     </div>
     {% else %}
-    <div class="end">
+    <div class="fixed-choices end">
         <p>故事到此结束。</p>
         <a href="{{ url_for('index') }}">重新开始</a>
     </div>
     {% endif %}
-</article>
+</div>
+
+<!-- 音频播放器 -->
+<div id="audio-container" style="display: none;"></div>
+
+<script>
+// 音频管理器
+class AudioManager {
+    constructor() {
+        this.audioElements = [];
+        this.volumeLevel = 7; // 默认音量7/10
+        this.loadSettings();
+        this.setupEventListeners();
+    }
+
+    loadSettings() {
+        const savedVolume = localStorage.getItem('audioVolume');
+        this.volumeLevel = savedVolume === null ? 7 : parseInt(savedVolume);
+        
+        const slider = document.getElementById('volume-slider');
+        const display = document.getElementById('volume-display');
+        slider.value = this.volumeLevel;
+        display.textContent = this.volumeLevel;
+    }
+
+    saveSettings() {
+        localStorage.setItem('audioVolume', this.volumeLevel);
+    }
+
+    setupEventListeners() {
+        const slider = document.getElementById('volume-slider');
+        const display = document.getElementById('volume-display');
+        
+        slider.addEventListener('input', (e) => {
+            this.volumeLevel = parseInt(e.target.value);
+            display.textContent = this.volumeLevel;
+            this.saveSettings();
+            
+            // 更新所有正在播放的音频音量
+            this.audioElements.forEach(audio => {
+                audio.volume = this.volumeLevel / 10;
+            });
+        });
+    }
+
+    playAudio(audioConfig) {
+        if (!audioConfig || this.volumeLevel === 0) return;
+
+        this.stopAllAudio();
+        
+        audioConfig.forEach(config => {
+            // 确保音频路径正确 - 使用encodeURI处理中文字符
+            const audioPath = encodeURI(config.src.startsWith('/') ? config.src : '/' + config.src);
+            console.log('Loading audio from:', audioPath);
+            
+            const audio = new Audio(audioPath);
+            audio.loop = config.loop || false;
+            audio.volume = this.volumeLevel / 10; // 将1-10转换为0-1
+            audio.preload = 'auto';
+            
+            audio.addEventListener('canplaythrough', () => {
+                console.log('Audio loaded, attempting to play:', audioPath);
+                audio.play().catch(e => {
+                    console.error('Audio play failed:', e);
+                    // 尝试用户交互后播放
+                    document.addEventListener('click', () => {
+                        audio.play().catch(e => console.log('Second attempt failed:', e));
+                    }, { once: true });
+                });
+            });
+            
+            audio.addEventListener('error', (e) => {
+                console.error('Audio loading error:', e, 'Path:', audioPath);
+                // 尝试使用decodeURI重新加载
+                const decodedPath = decodeURI(audioPath);
+                console.log('Trying decoded path:', decodedPath);
+                const retryAudio = new Audio(decodedPath);
+                retryAudio.loop = config.loop || false;
+                retryAudio.volume = this.volumeLevel / 10;
+                retryAudio.play().catch(err => console.log('Retry failed:', err));
+            });
+            
+            this.audioElements.push(audio);
+        });
+    }
+
+    stopAllAudio() {
+        this.audioElements.forEach(audio => {
+            audio.pause();
+            audio.currentTime = 0;
+        });
+        this.audioElements = [];
+    }
+}
+
+// 初始化音频管理器
+const audioManager = new AudioManager();
+
+// 设置面板切换
+function toggleSettings() {
+    const panel = document.getElementById('settings-panel');
+    panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+}
+
+// 页面加载时播放音频
+window.addEventListener('load', () => {
+    const audioData = {{ chapter.audio|tojson|safe }};
+    console.log('Audio data loaded:', audioData);
+    if (audioData && audioData.length > 0) {
+        setTimeout(() => {
+            audioManager.playAudio(audioData);
+        }, 1000); // 增加延迟确保页面完全加载
+    } else {
+        console.log('No audio configured for this chapter');
+    }
+});
+
+// 点击选择时保存音频状态到下一个页面
+function handleChoiceClick(choiceUrl) {
+    audioManager.stopAllAudio();
+    window.location.href = choiceUrl;
+}
+
+// 修改选择链接的点击行为
+document.addEventListener('DOMContentLoaded', () => {
+    const choiceLinks = document.querySelectorAll('.choice-link');
+    choiceLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            handleChoiceClick(link.href);
+        });
+    });
+});
+</script>
 {% endblock %}
